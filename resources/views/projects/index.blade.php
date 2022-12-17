@@ -1,20 +1,14 @@
-<!DOCTYPE html>
-<html lang="en">
+<x-app-layout>
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Document</title>
-</head>
-
-<body>
-
-    <h1>Birdboard</h1>
+    <div class="flex items-center justify-between mb-3">
+        <a class="text-xs" href="{{ route('projects.create') }}">
+            <p class="text-blue-300">New Project</p>
+        </a>
+    </div>
 
     <ul>
         @forelse ($projects as $project)
-            <li>
+            <li class="text-sm list-disc">
                 <a href="{{ $project->path() }}">
                     {{ $project->title }}
                 </a>
@@ -23,7 +17,4 @@
             <li>No projects yet.</li>
         @endforelse
     </ul>
-
-</body>
-
-</html>
+</x-app-layout>

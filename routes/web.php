@@ -24,19 +24,17 @@ Route::get('/dashboard', function () {
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
+    // routes from breeze
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
+    // routes I created 
+    Route::get('/projects', [ProjectsController::class, 'index'])->name('projects.index');
+    Route::get('/projects/create', [ProjectsController::class, 'create'])->name('projects.create');
+    Route::get('/projects/{project}', [ProjectsController::class, 'show'])->name('projects.show');
+    Route::post('/projects', [ProjectsController::class, 'store'])->name('projects.store');
 });
 
-Route::get('projects', [ProjectsController::class, 'index'])
-    ->name('projects.index');
 
-Route::get('projects/{project}', [ProjectsController::class, 'show'])
-    ->name('projects.show');
-
-Route::post('projects/', [ProjectsController::class, 'store'])
-    ->name('projects.store')
-    ->middleware('auth');
-
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';
