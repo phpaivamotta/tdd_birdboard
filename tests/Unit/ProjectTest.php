@@ -15,6 +15,6 @@ class ProjectTest extends TestCase
     {
         $project = Project::factory()->create();
 
-        $this->assertEquals('projects/' . $project->id, $project->path());
+        $this->assertEquals('/projects/' . $project->id, $project->path());
     }
 }
