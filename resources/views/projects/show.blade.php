@@ -19,22 +19,22 @@
                 <div>
                     <h2 class="text-lg text-gray-200 mb-2">Tasks</h2>
 
-                    <div class="card mb-4">Lorem Isum notes...</div>
-                    <div class="card mb-4">Lorem Isum notes...</div>
-                    <div class="card mb-4">Lorem Isum notes...</div>
-                    <div class="card">Lorem Isum notes...</div>
+                    @forelse ($project->tasks as $task)
+                        <div class="card mb-4">{{ $task->body }}</div>
+                    @empty
+                        <p class="text-gray-400">No tasks yet.</p>
+                    @endforelse
+
                 </div>
 
                 <div class="mt-8">
                     <h2 class="text-lg text-gray-200 mb-2">General Notes</h2>
-                    <textarea class="card w-full" style="min-height: 200px;">Lorem Ipsum notes...</textarea>
+                    <textarea class="card w-full text-gray-400" style="min-height: 200px;">Lorem Ipsum notes...</textarea>
                 </div>
             </div>
 
             <div class="lg:w-1/4">
                 <x-card :project="$project" />
-
-                {{-- <a class="text-xs text-blue-300" href="{{ route('projects.index') }}">Go back</a> --}}
             </div>
 
         </div>

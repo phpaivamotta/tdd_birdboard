@@ -11,6 +11,11 @@ class Project extends Model
 
     protected $guarded = [];
 
+    public function addTask($body)
+    {
+        return $this->tasks()->create(['body' => $body]);
+    }
+
     public function path()
     {
         return "/projects/{$this->id}";
@@ -19,5 +24,10 @@ class Project extends Model
     public function owner()
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function tasks()
+    {
+        return $this->hasMany(Task::class);
     }
 }

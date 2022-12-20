@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ProjectsController;
+use App\Http\Controllers\ProjectTasksController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -25,15 +26,30 @@ Route::get('/dashboard', function () {
 
 Route::middleware('auth')->group(function () {
     // routes from breeze
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    Route::get('/profile', [ProfileController::class, 'edit'])
+        ->name('profile.edit');
 
-    // routes I created 
-    Route::get('/projects', [ProjectsController::class, 'index'])->name('projects.index');
-    Route::get('/projects/create', [ProjectsController::class, 'create'])->name('projects.create');
-    Route::get('/projects/{project}', [ProjectsController::class, 'show'])->name('projects.show');
-    Route::post('/projects', [ProjectsController::class, 'store'])->name('projects.store');
+    Route::patch('/profile', [ProfileController::class, 'update'])
+        ->name('profile.update');
+
+    Route::delete('/profile', [ProfileController::class, 'destroy'])
+        ->name('profile.destroy');
+
+    // routes I created
+    Route::get('/projects', [ProjectsController::class, 'index'])
+        ->name('projects.index');
+
+    Route::get('/projects/create', [ProjectsController::class, 'create'])
+        ->name('projects.create');
+
+    Route::post('/projects/{project}/tasks', [ProjectTasksController::class, 'store'])
+        ->name('projects.tasks.store');
+
+    Route::get('/projects/{project}', [ProjectsController::class, 'show'])
+        ->name('projects.show');
+
+    Route::post('/projects', [ProjectsController::class, 'store'])
+        ->name('projects.store');
 });
 
 
