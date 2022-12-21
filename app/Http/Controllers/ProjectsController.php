@@ -10,7 +10,7 @@ class ProjectsController extends Controller
     public function index()
     {
         return view('projects.index', [
-            'projects' => Project::where('owner_id', auth()->user()->id)->get()
+            'projects' => auth()->user()->projects
         ]);
     }
 

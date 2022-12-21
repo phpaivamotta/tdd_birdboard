@@ -11,11 +11,12 @@
 
     </header>
 
-    <main class="lg:file:flex lg:file:flex-wrap -mx-3">
+    <main class="lg:flex lg:flex-wrap -mx-3">
         @forelse ($projects as $project)
-            <x-card class="px-3 pb-6" :project="$project"/>
+            <x-card class="px-3 pb-6 lg:w-1/3" :project="$project"/>
         @empty
             <li>No projects yet.</li>
         @endforelse
     </main>
+
 </x-app-layout>

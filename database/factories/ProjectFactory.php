@@ -18,7 +18,7 @@ class ProjectFactory extends Factory
     public function definition()
     {
         return [
-            'owner_id' => User::factory()->create(),
+            'owner_id' => User::factory(),
             'title' => fake()->sentence(4),
             'description' => fake()->sentence(4)
         ];
