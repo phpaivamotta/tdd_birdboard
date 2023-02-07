@@ -51,17 +51,23 @@
                         @csrf
                         @method('PATCH')
 
-                        <textarea 
-                            name="notes"
-                            class="card w-full text-gray-400 mb-4" 
-                            style="min-height: 200px;" 
-                            placeholder="Your notes..."
-                        >{{ $project->notes }}</textarea>
+                        <textarea name="notes" class="card w-full text-gray-400 mb-4" style="min-height: 200px;" placeholder="Your notes...">{{ $project->notes }}</textarea>
 
                         <button type="submit" class="button">
                             Save
                         </button>
                     </form>
+
+                    @if ($errors->any())
+                        <div class="field mt-6">
+                            <ul>
+                                @foreach ($errors->all() as $error)
+                                    <li class="text-sm text-red-500">{{ $error }}</li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    @endif
+
                 </div>
             </div>
 
