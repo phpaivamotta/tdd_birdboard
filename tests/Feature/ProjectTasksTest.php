@@ -7,6 +7,7 @@ use App\Models\Task;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
+use Facades\Tests\Setup\ProjectFactory;
 use Tests\TestCase;
 
 class ProjectTasksTest extends TestCase
@@ -39,15 +40,24 @@ class ProjectTasksTest extends TestCase
     {
         $this->signIn();
 
-        $project = Project::factory()->create();
+        $project = ProjectFactory::withTasks(1)->create();
 
-        $task = $project->addTask('test task');
-
-        $this->patch($task->path(), [
+        $this->patch($project->tasks->first()->path(), [
             'body' => 'changed task'
         ])->assertStatus(403);
 
         $this->assertDatabaseMissing('tasks', ['body' => 'changed task']);
+    }
+
+    public function test_a_project_can_have_tasks()
+    {
+        $project = ProjectFactory::create();
+
+        $this->actingAs($project->owner)
+            ->post($project->path() . '/tasks', ['body' => 'Test task']);
+
+        $this->get($project->path())
+            ->assertSee('Test task');
     }
 
     public function test_a_user_can_create_a_task()
@@ -67,15 +77,10 @@ class ProjectTasksTest extends TestCase
 
     public function test_a_task_can_be_updated()
     {
-        $this->withoutExceptionHandling();
+        $project = ProjectFactory::withTasks(1)->create();
 
-        $this->signIn();
-
-        $project = Project::factory()->create(['owner_id' => auth()->id()]);
-
-        $task = $project->addTask('test task');
-
-        $this->patch($task->path(), [
+        $this->actingAs($project->owner)
+            ->patch($project->tasks->first()->path(), [
             'body' => 'changed task',
             'completed' => True
         ]);
@@ -88,12 +93,12 @@ class ProjectTasksTest extends TestCase
 
     public function test_a_task_requires_a_body()
     {
-        $this->signIn();
-
-        $project = Project::factory()->create(['owner_id' => auth()->id()]);
+        $project = ProjectFactory::create();
 
         $task = Task::factory()->raw(['project_id' => $project->id, 'body' => '']);
 
-        $this->post($project->path() . '/tasks', $task)->assertSessionHasErrors('body');
+        $this->actingAs($project->owner)
+            ->post($project->path() . '/tasks', $task)
+            ->assertSessionHasErrors('body');
     }
 }

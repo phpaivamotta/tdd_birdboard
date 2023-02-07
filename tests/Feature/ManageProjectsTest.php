@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Models\Project;
 use App\Models\User;
+use Facades\Tests\Setup\ProjectFactory;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
@@ -38,8 +39,6 @@ class ManageProjectsTest extends TestCase
 
     public function test_user_can_create_project()
     {
-        $this->withoutExceptionHandling();
-        
         $this->signIn();
 
         $this->get('/projects/create')->assertStatus(200);
@@ -56,8 +55,6 @@ class ManageProjectsTest extends TestCase
 
         $response->assertRedirect($project->path());
 
-        $this->assertDatabaseHas('projects', $attributes);
-
         $this->get($project->path())
             ->assertSee($attributes['title'])
             ->assertSee($attributes['description'])
@@ -66,30 +63,21 @@ class ManageProjectsTest extends TestCase
 
     public function test_user_can_update_project()
     {
-        $this->withoutExceptionHandling();
-    
-        $this->signIn();
-    
-        $project = Project::factory()->create([
-            'owner_id' => auth()->id()
-        ]);
+        $project = ProjectFactory::create();
 
-        $this->patch($project->path(), [
-            'notes' => 'test notes'
-        ])->assertRedirect($project->path());
+        $this->actingAs($project->owner)
+            ->patch($project->path(), $attributes = ['notes' => 'test notes'])
+            ->assertRedirect($project->path());
 
-        $this->assertDatabaseHas('projects', [
-            'notes' => 'test notes'
-        ]);
+        $this->assertDatabaseHas('projects', $attributes);
     }
 
     public function test_a_user_can_view_their_project()
     {
-        $this->signIn();
+        $project =  ProjectFactory::create();
 
-        $project = Project::factory()->create(['owner_id' => auth()->id()]);
-
-        $this->get($project->path())
+        $this->actingAs($project->owner)
+            ->get($project->path())
             ->assertSee($project->title)
             ->assertSee($project->description);
     }
