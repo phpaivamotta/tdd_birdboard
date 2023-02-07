@@ -4,9 +4,9 @@
             <a href="{{ route('projects.index') }}">My Projects</a> &nbsp;/&nbsp; {{ $project->title }}
         </p>
 
-        <a class="text-xs" href="{{ route('projects.create') }}">
+        <a class="text-xs" href="{{ route('projects.edit', $project->id) }}">
             <h2 class="button">
-                Add Project
+                Edit Project
             </h2>
         </a>
 
