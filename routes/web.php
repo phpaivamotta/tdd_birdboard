@@ -43,11 +43,14 @@ Route::middleware('auth')->group(function () {
         ->name('projects.create');
 
     Route::get('/projects/{project}', [ProjectsController::class, 'show'])
-    ->name('projects.show');
-    
+        ->name('projects.show');
+
+    Route::patch('/projects/{project}', [ProjectsController::class, 'update'])
+        ->name('projects.update');
+
     Route::post('/projects', [ProjectsController::class, 'store'])
-    ->name('projects.store');
-        
+        ->name('projects.store');
+
     Route::post('/projects/{project}/tasks', [ProjectTasksController::class, 'store'])
         ->name('projects.tasks.store');
 
