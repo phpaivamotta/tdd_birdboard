@@ -11,13 +11,9 @@ class Project extends Model
 
     protected $guarded = [];
 
-    
-    public function recordActivity($type)
+    public function recordActivity($description)
     {
-        Activity::create([
-            'project_id' => $this->id,
-            'description' => $type
-        ]);
+        $this->activities()->create(['description' => $description]);
     }
 
     public function addTask($body)
