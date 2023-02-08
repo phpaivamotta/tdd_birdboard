@@ -29,10 +29,11 @@ class ProjectTasksController extends Controller
             'body' => ['required']
         ]);
 
-        $task->update([
-            'body' => request('body'),
-            'completed' => request()->has('completed') // need the ->has() method to see if box was checked, because otherwise this field is not sent through
-        ]);
+        $task->update(['body' => request('body')]);
+
+        if (request()->has('completed')) {
+            $task->complete();
+        }
 
         return redirect($project->path());
     }

@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Models\Project;
 use Facades\Tests\Setup\ProjectFactory;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
@@ -11,7 +12,7 @@ class ActivityFeedTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_creating_a_project_generates_activity()
+    public function test_creating_a_project_records_activity()
     {
         $this->withoutExceptionHandling();
     
@@ -21,7 +22,7 @@ class ActivityFeedTest extends TestCase
         $this->assertEquals('created', $project->activities->first()->description);
     }
 
-    public function test_updating_a_project_generates_activity()
+    public function test_updating_a_project_records_activity()
     {
         $this->withoutExceptionHandling();
     
@@ -32,5 +33,28 @@ class ActivityFeedTest extends TestCase
         $this->assertDatabaseCount('activities', 2);
         $this->assertDatabaseHas('activities', ['description' => 'created']);
         $this->assertDatabaseHas('activities', ['description' => 'updated']);
+    }
+
+    public function test_creating_new_task_records_project_activity()
+    {
+        $project = ProjectFactory::create();
+        $project->addTask('some task');
+    
+        $this->assertCount(2, $project->activities);
+        $this->assertEquals('created_task', $project->activities->last()->description);
+    }
+
+    public function test_completing_a_task_records_activity()
+    {
+        $project = ProjectFactory::withTasks(1)->create();
+        
+        $this->actingAs($project->owner)
+            ->patch($project->tasks->first()->path(), [
+            'body' => 'foobar',
+            'completed' => true
+        ]);
+
+        $this->assertCount(3, $project->activities);
+        $this->assertEquals('completed_task', $project->activities->last()->description);
     }
 }
