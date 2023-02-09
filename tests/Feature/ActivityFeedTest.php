@@ -57,4 +57,34 @@ class ActivityFeedTest extends TestCase
         $this->assertCount(3, $project->activities);
         $this->assertEquals('completed_task', $project->activities->last()->description);
     }
+
+    public function test_incompleting_a_task_records_activity()
+    {
+        $project = ProjectFactory::withTasks(1)->create();
+        
+        $this->actingAs($project->owner)
+            ->patch($project->tasks->first()->path(), [
+            'body' => 'foobar',
+            'completed' => true
+        ]);
+
+        $this->assertCount(3, $project->fresh()->activities);
+
+        $this->patch($project->tasks->first()->path(), [
+            'body' => 'foobar',
+            'completed' => false
+        ]);
+
+        $this->assertCount(4, $project->fresh()->activities);
+        $this->assertEquals('incompleted_task', $project->activities->last()->description);
+    }
+
+    public function test_deleting_a_task_records_activity()
+    {
+        $project = ProjectFactory::withTasks(1)->create();
+
+        $project->tasks->first()->delete();
+
+        $this->assertCount(3, $project->activities);
+    }
 }

@@ -15,10 +15,7 @@ class ProjectObserver
      */
     public function created(Project $project)
     {
-        Activity::create([
-            'project_id' => $project->id,
-            'description' => 'created'
-        ]);
+        $project->recordActivity('created');
     }
 
     /**
