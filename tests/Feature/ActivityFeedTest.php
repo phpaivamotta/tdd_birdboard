@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\Project;
+use App\Models\Task;
 use Facades\Tests\Setup\ProjectFactory;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
@@ -41,7 +42,12 @@ class ActivityFeedTest extends TestCase
         $project->addTask('some task');
     
         $this->assertCount(2, $project->activities);
-        $this->assertEquals('created_task', $project->activities->last()->description);
+
+        tap($project->activities->last(), function ($activity) {
+            $this->assertEquals('created_task', $activity->description);
+            $this->assertInstanceOf(Task::class, $activity->subject);
+            $this->assertEquals('some task', $activity->subject->body);
+        });
     }
 
     public function test_completing_a_task_records_activity()
@@ -55,7 +61,11 @@ class ActivityFeedTest extends TestCase
         ]);
 
         $this->assertCount(3, $project->activities);
-        $this->assertEquals('completed_task', $project->activities->last()->description);
+
+        tap($project->activities->last(), function ($activity) {
+            $this->assertEquals('completed_task', $activity->description);
+            $this->assertInstanceOf(Task::class, $activity->subject);
+        });
     }
 
     public function test_incompleting_a_task_records_activity()
@@ -76,7 +86,7 @@ class ActivityFeedTest extends TestCase
         ]);
 
         $this->assertCount(4, $project->fresh()->activities);
-        $this->assertEquals('incompleted_task', $project->activities->last()->description);
+        $this->assertEquals('incompleted_task', $project->fresh()->activities->last()->description);
     }
 
     public function test_deleting_a_task_records_activity()
