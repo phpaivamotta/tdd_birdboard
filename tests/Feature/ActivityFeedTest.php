@@ -9,41 +9,53 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 
+use function PHPUnit\Framework\assertEquals;
+
 class ActivityFeedTest extends TestCase
 {
     use RefreshDatabase;
 
     public function test_creating_a_project_records_activity()
     {
-        $this->withoutExceptionHandling();
-    
         $project = ProjectFactory::create();
-        
+
         $this->assertCount(1, $project->activities);
-        $this->assertEquals('created', $project->activities->first()->description);
+        
+        tap($project->activities->last(), function ($activity) {
+            $this->assertEquals('created', $activity->description);
+            $this->assertNull($activity->changes);
+        });
     }
 
     public function test_updating_a_project_records_activity()
     {
-        $this->withoutExceptionHandling();
-    
         $project = ProjectFactory::create();
-        
+        $originalTitle = $project->title;
+
         $project->update(['title' => 'changed title']);
 
-        $this->assertDatabaseCount('activities', 2);
-        $this->assertDatabaseHas('activities', ['description' => 'created']);
-        $this->assertDatabaseHas('activities', ['description' => 'updated']);
+        $this->assertCount(2, $project->activities);
+        tap($project->activities->last(), function ($activity) use ($originalTitle) {
+            $this->assertEquals('updated', $activity->description);
+
+            $expected = [
+                'before' => ['title' => $originalTitle],
+                'after' => ['title' => 'changed title'],
+            ];
+
+            $this->assertEquals($expected, $activity->changes);
+        });
     }
 
     public function test_creating_new_task_records_project_activity()
     {
         $project = ProjectFactory::create();
         $project->addTask('some task');
-    
+
         $this->assertCount(2, $project->activities);
 
-        tap($project->activities->last(), function ($activity) {
+        $lastAct = $project->activities->last();
+        tap($lastAct, function ($activity) {
             $this->assertEquals('created_task', $activity->description);
             $this->assertInstanceOf(Task::class, $activity->subject);
             $this->assertEquals('some task', $activity->subject->body);
@@ -53,16 +65,17 @@ class ActivityFeedTest extends TestCase
     public function test_completing_a_task_records_activity()
     {
         $project = ProjectFactory::withTasks(1)->create();
-        
+
         $this->actingAs($project->owner)
             ->patch($project->tasks->first()->path(), [
-            'body' => 'foobar',
-            'completed' => true
-        ]);
+                'body' => 'foobar',
+                'completed' => true
+            ]);
 
         $this->assertCount(3, $project->activities);
 
-        tap($project->activities->last(), function ($activity) {
+        $lastAct = $project->activities->last();
+        tap($lastAct, function ($activity) {
             $this->assertEquals('completed_task', $activity->description);
             $this->assertInstanceOf(Task::class, $activity->subject);
         });
@@ -71,12 +84,12 @@ class ActivityFeedTest extends TestCase
     public function test_incompleting_a_task_records_activity()
     {
         $project = ProjectFactory::withTasks(1)->create();
-        
+
         $this->actingAs($project->owner)
             ->patch($project->tasks->first()->path(), [
-            'body' => 'foobar',
-            'completed' => true
-        ]);
+                'body' => 'foobar',
+                'completed' => true
+            ]);
 
         $this->assertCount(3, $project->fresh()->activities);
 
