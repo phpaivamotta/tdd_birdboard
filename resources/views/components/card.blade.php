@@ -8,8 +8,18 @@
             </a>
         </h3>
 
-        <div class="text-sm text-gray-400">
+        <div class="text-sm text-gray-400 mb-4">
             {{ \Illuminate\Support\Str::limit($project->description, 100) }}
         </div>
+
+        <footer>
+            <form method="POST" action="{{ $project->path() }}" class="text-right">
+                @csrf
+                @method('DELETE')
+                <button type="submit">
+                    Delete
+                </button>
+            </form>
+        </footer>
     </div>
 </div>
