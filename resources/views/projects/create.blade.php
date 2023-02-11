@@ -5,7 +5,7 @@
             <form method="POST" action="{{ route('projects.store') }}">
                 @csrf
 
-                <x-form :project="new App\Models\Project()"/>
+                <x-form :project="new App\Models\Project()" />
 
             </form>
         </div>

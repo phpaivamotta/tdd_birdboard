@@ -2,11 +2,9 @@
 
 namespace Tests\Feature;
 
-use App\Models\Project;
 use App\Models\Task;
 use Facades\Tests\Setup\ProjectFactory;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 
 use function PHPUnit\Framework\assertEquals;
@@ -22,7 +20,7 @@ class ActivityFeedTest extends TestCase
         $this->assertCount(1, $project->activities);
         
         tap($project->activities->last(), function ($activity) {
-            $this->assertEquals('created', $activity->description);
+            $this->assertEquals('created_project', $activity->description);
             $this->assertNull($activity->changes);
         });
     }
@@ -36,7 +34,7 @@ class ActivityFeedTest extends TestCase
 
         $this->assertCount(2, $project->activities);
         tap($project->activities->last(), function ($activity) use ($originalTitle) {
-            $this->assertEquals('updated', $activity->description);
+            $this->assertEquals('updated_project', $activity->description);
 
             $expected = [
                 'before' => ['title' => $originalTitle],
@@ -75,7 +73,9 @@ class ActivityFeedTest extends TestCase
         $this->assertCount(3, $project->activities);
 
         $lastAct = $project->activities->last();
+        // dd($lastAct->description);
         tap($lastAct, function ($activity) {
+            // dd($activity->description);
             $this->assertEquals('completed_task', $activity->description);
             $this->assertInstanceOf(Task::class, $activity->subject);
         });
