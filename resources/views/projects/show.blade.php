@@ -1,15 +1,32 @@
 <x-app-layout>
     <header class="flex items-end justify-between my-6">
         <p class="text-blue-300 text-sm">
-            <a href="{{ route('projects.index') }}">My Projects</a> &nbsp;/&nbsp; {{ $project->title }}
+            <a href="{{ route('projects.index') }}">
+                My Projects
+            </a> 
+            &nbsp;/&nbsp;
+            {{ $project->title }}
         </p>
 
-        <a class="text-xs" href="{{ route('projects.edit', $project->id) }}">
-            <h2 class="button">
-                Edit Project
-            </h2>
-        </a>
+        <div class="flex items-center">
+            @foreach ($project->members as $member)
+                <img 
+                    src="{{ gravatar_url($member->email) }}" 
+                    alt="{{ $member->name }}'s avatar" 
+                    class="rounded-full w-8 mr-2">
+            @endforeach
 
+            <img 
+                src="{{ gravatar_url($project->owner->email) }}" 
+                alt="{{ $project->owner->name }}'s avatar" 
+                class="rounded-full w-8 mr-2">
+
+            <a class="text-xs" href="{{ route('projects.edit', $project->id) }}">
+                <h2 class="button ml-4">
+                    Edit Project
+                </h2>
+            </a>
+        </div>
     </header>
 
     <main>
