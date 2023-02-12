@@ -3,22 +3,18 @@
         <p class="text-blue-300 text-sm">
             <a href="{{ route('projects.index') }}">
                 My Projects
-            </a> 
+            </a>
             &nbsp;/&nbsp;
             {{ $project->title }}
         </p>
 
         <div class="flex items-center">
             @foreach ($project->members as $member)
-                <img 
-                    src="{{ gravatar_url($member->email) }}" 
-                    alt="{{ $member->name }}'s avatar" 
+                <img src="{{ gravatar_url($member->email) }}" alt="{{ $member->name }}'s avatar"
                     class="rounded-full w-8 mr-2">
             @endforeach
 
-            <img 
-                src="{{ gravatar_url($project->owner->email) }}" 
-                alt="{{ $project->owner->name }}'s avatar" 
+            <img src="{{ gravatar_url($project->owner->email) }}" alt="{{ $project->owner->name }}'s avatar"
                 class="rounded-full w-8 mr-2">
 
             <a class="text-xs" href="{{ route('projects.edit', $project->id) }}">
@@ -75,15 +71,7 @@
                         </button>
                     </form>
 
-                    @if ($errors->any())
-                        <div class="field mt-6">
-                            <ul>
-                                @foreach ($errors->all() as $error)
-                                    <li class="text-sm text-red-500">{{ $error }}</li>
-                                @endforeach
-                            </ul>
-                        </div>
-                    @endif
+                    @include('errors')
 
                 </div>
             </div>
@@ -91,6 +79,10 @@
             <div class="lg:w-1/4">
                 <x-card :project="$project" />
                 @include('projects.activities.card')
+
+                @can('manage', $project)
+                    @include('projects.invite')
+                @endcan
             </div>
 
         </div>
